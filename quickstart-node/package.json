@@ -12,6 +12,8 @@
     "swap": "node src/swap.mjs"
   },
   "dependencies": {
-    "@synfin/client": "^0.1.1"
+    "@partylayer/sdk": ">=0.14",
+    "@synfin/client": "^0.1.1",
+    "@synfin/wallet-partylayer": "^0.1.0"
   }
 }

@@ -49,9 +49,12 @@ node --env-file=.env src/swap.mjs
 ```
 
 `src/swap.mjs` quotes, then builds a plan (both are read-only, no funds move).
-To actually execute, you implement the `WalletAdapter` in that file against your
-own Canton wallet on the taker's party, then set `SYNFIN_EXECUTE=1`. **Execution
-moves real funds on mainnet.**
+To execute, it uses the published reference adapter
+[`@synfin/wallet-partylayer`](https://www.npmjs.com/package/@synfin/wallet-partylayer):
+`createPartyLayerWalletAdapter(partyLayerClient, {...})` gives you a ready
+`WalletAdapter` in five lines, no Canton-specific code. You supply a connected
+PartyLayer client (from your app's wallet connection, not a headless script),
+then set `SYNFIN_EXECUTE=1`. **Execution moves real funds on mainnet.**
 
 - **Tradecraft is the executable venue today.** Other venues appear in the quote
   for comparison but are not yet plan-buildable.

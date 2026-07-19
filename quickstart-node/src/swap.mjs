@@ -21,6 +21,7 @@ import {
   isPartnerTerminal,
   SynfinApiError,
 } from '@synfin/client';
+import { createPartyLayerWalletAdapter } from '@synfin/wallet-partylayer';
 
 const apiKey = process.env.SYNFIN_API_KEY;
 const takerParty = process.env.SYNFIN_TAKER_PARTY;
@@ -71,35 +72,27 @@ console.log(`  minReceive (on-ledger floor): ${plan.quoteRef.minReceive}`);
 console.log(`  collectsFees: ${plan.collectsFees}`); // false while the flag is off
 console.log(`  steps: ${plan.steps.map((s) => s.kind).join(', ')}`);
 
-// 3) Execute, from YOUR wallet. Implement this adapter against your Canton
-//    wallet on the taker's party. Every method reads/acts on the taker's OWN
-//    ledger view (never a third-party explorer snapshot).
-const wallet = {
-  // Create the CIP-56 transfer offer for the venue deposit; return its id.
-  sendDeposit: async (_step) => {
-    throw new Error(
-      'Implement sendDeposit against your Canton wallet to execute a real swap.',
-    );
-  },
-  // DEPRECATED and never called: plans no longer emit a fee-escrow-lock step.
-  // Keep this stub for source compatibility. On-ledger fee collection, when it
-  // is enabled, rides an atomic CIP-0112 batch with the deposit, a wallet
-  // capability, not this method. The generic adapter does not perform that
-  // batch, so fees are not SDK-executed here even after the flag flips.
-  lockFeeEscrow: () => Promise.resolve(null),
-  withdrawDeposit: (_id) => Promise.resolve({ withdrawn: true }),
-  depositActive: (_id) => Promise.resolve(true),
-  observePayout: (_args) => Promise.resolve({ received: '0' }),
-};
-
+// 3) Execute, from YOUR wallet. The reference adapter builds a ready
+//    WalletAdapter for a PartyLayer-connected wallet in a few lines, so you
+//    write no Canton-specific code. A PartyLayer client comes from your app's
+//    wallet connection (@partylayer/sdk); it is not available in a headless
+//    script, so this section runs only when you wire a real client and set
+//    SYNFIN_EXECUTE=1. Execution moves real funds on mainnet.
 const canExecute = process.env.SYNFIN_EXECUTE === '1';
 if (!canExecute) {
   console.log(
-    '\nStopping at the plan. Implement the WalletAdapter above and set ' +
-      'SYNFIN_EXECUTE=1 to execute for real.',
+    '\nStopping at the plan. Connect a PartyLayer wallet, then set ' +
+      'SYNFIN_EXECUTE=1 to execute the five-line path below for real.',
   );
   process.exit(0);
 }
+
+// `partyLayerClient` is YOUR connected wallet (from @partylayer/sdk).
+const wallet = createPartyLayerWalletAdapter(partyLayerClient, {
+  party: takerParty,
+  registryBaseUrl: process.env.SYNFIN_REGISTRY_URL ?? 'https://registry.example',
+  instrumentAdmin: process.env.SYNFIN_INSTRUMENT_ADMIN ?? 'dso::1220...',
+});
 
 const handle = await executePlan(plan, {
   wallet,
