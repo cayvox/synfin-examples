@@ -1,0 +1,17 @@
+{
+  "name": "synfin-quickstart-node",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A minimal, runnable Synfin integration: quote a swap and (with your own Canton wallet) execute one, against the live hosted API.",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "quote": "node src/quote.mjs",
+    "swap": "node src/swap.mjs"
+  },
+  "dependencies": {
+    "@synfin/client": "^0.1.1"
+  }
+}
