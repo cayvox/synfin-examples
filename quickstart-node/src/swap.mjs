@@ -7,9 +7,9 @@
 // - getQuote and createPlan are read-only calls to the hosted API. They move
 //   no funds and are safe to run.
 // - executePlan and track drive YOUR wallet. Execution moves real funds on
-//   mainnet, so it runs only once you implement the WalletAdapter below against
-//   a real Canton wallet on the taker's party. Until then this script stops at
-//   the plan and prints it.
+//   mainnet, so it runs only once you connect a real PartyLayer wallet on the
+//   taker's party (the published @synfin/wallet-partylayer adapter does the
+//   Canton wiring). Until then this script stops at the plan and prints it.
 // - Tradecraft is the executable venue today; other venues are quote-only.
 // - Fees are DISCLOSED, not COLLECTED on-ledger today (FEE_COLLECTION_ENABLED
 //   is false). See the README "The fee reality".
@@ -73,11 +73,14 @@ console.log(`  collectsFees: ${plan.collectsFees}`); // false while the flag is 
 console.log(`  steps: ${plan.steps.map((s) => s.kind).join(', ')}`);
 
 // 3) Execute, from YOUR wallet. The reference adapter builds a ready
-//    WalletAdapter for a PartyLayer-connected wallet in a few lines, so you
-//    write no Canton-specific code. A PartyLayer client comes from your app's
-//    wallet connection (@partylayer/sdk); it is not available in a headless
-//    script, so this section runs only when you wire a real client and set
+//    WalletAdapter from just the connected client and the taker party, so you
+//    write no Canton-specific code and paste no network identifiers (the
+//    registry base defaults to mainnet; the deposit admin is read from the
+//    wallet's own holdings). A PartyLayer client comes from your app's wallet
+//    connection (@partylayer/sdk); it is not available in a headless script, so
+//    this section runs only when you wire a real client and set
 //    SYNFIN_EXECUTE=1. Execution moves real funds on mainnet.
+//    See https://synfin.xyz/docs/connect-wallet for the connect flow.
 const canExecute = process.env.SYNFIN_EXECUTE === '1';
 if (!canExecute) {
   console.log(
@@ -87,11 +90,10 @@ if (!canExecute) {
   process.exit(0);
 }
 
-// `partyLayerClient` is YOUR connected wallet (from @partylayer/sdk).
+// `partyLayerClient` is YOUR connected wallet (from @partylayer/sdk). Wallet in,
+// adapter out: only the taker party, nothing network-specific.
 const wallet = createPartyLayerWalletAdapter(partyLayerClient, {
   party: takerParty,
-  registryBaseUrl: process.env.SYNFIN_REGISTRY_URL ?? 'https://registry.example',
-  instrumentAdmin: process.env.SYNFIN_INSTRUMENT_ADMIN ?? 'dso::1220...',
 });
 
 const handle = await executePlan(plan, {

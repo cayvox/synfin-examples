@@ -61,7 +61,7 @@ try {
   if (best) {
     console.log(`\nBest executable venue: ${best.venueId} (net ${best.net})`);
     console.log(
-      'Next: fill in a WalletAdapter and run src/swap.mjs to execute.',
+      'Next: connect a wallet and run src/swap.mjs to execute.',
     );
   } else {
     console.log('\nNo venue is currently available for this pair.');

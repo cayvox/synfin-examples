@@ -51,10 +51,13 @@ node --env-file=.env src/swap.mjs
 `src/swap.mjs` quotes, then builds a plan (both are read-only, no funds move).
 To execute, it uses the published reference adapter
 [`@synfin/wallet-partylayer`](https://www.npmjs.com/package/@synfin/wallet-partylayer):
-`createPartyLayerWalletAdapter(partyLayerClient, {...})` gives you a ready
-`WalletAdapter` in five lines, no Canton-specific code. You supply a connected
-PartyLayer client (from your app's wallet connection, not a headless script),
-then set `SYNFIN_EXECUTE=1`. **Execution moves real funds on mainnet.**
+`createPartyLayerWalletAdapter(partyLayerClient, { party })` gives you a ready
+`WalletAdapter` with no Canton-specific code and no network identifiers to paste
+(the registry base defaults to mainnet; the deposit admin is read from the
+wallet's own holdings). You supply a connected PartyLayer client (from your
+app's wallet connection, not a headless script, see
+[synfin.xyz/docs/connect-wallet](https://synfin.xyz/docs/connect-wallet)), then
+set `SYNFIN_EXECUTE=1`. **Execution moves real funds on mainnet.**
 
 - **Tradecraft is the executable venue today.** Other venues appear in the quote
   for comparison but are not yet plan-buildable.
