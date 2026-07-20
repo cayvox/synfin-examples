@@ -25,5 +25,8 @@
     "@vitejs/plugin-react": "^4.3.1",
     "typescript": "^5.5.4",
     "vite": "^5.4.0"
+  },
+  "overrides": {
+    "@fivenorth/loop-sdk": "0.13.2"
   }
 }

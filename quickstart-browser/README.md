@@ -1,13 +1,16 @@
 # quickstart-browser
 
-> **Origin requirement (read first).** The wallet connect is origin-bound: Loop
-> validates the page's origin when it loads the connection ticket, and a plain
-> `http://localhost` origin is **not** accepted (you will see "Failed to Load
-> Connection: the ticket may be invalid or expired"). Serve this from a permitted
-> origin: a public **https** origin (for local dev, an https tunnel to the dev
-> server), not bare localhost. The exact policy (any https origin vs a
-> pre-registered one) is being finalized; until then, do not expect
-> `http://localhost:5178` to connect a wallet.
+> **Keep the Loop SDK current (this is a real footgun).** The wallet connect uses
+> `@fivenorth/loop-sdk`, which is BUNDLED into your app as a transitive dependency
+> of `@partylayer/sdk` (via `@partylayer/adapter-loop`). Loop evolves its pairing
+> protocol, so a **stale** bundled version fails to connect with an opaque
+> wallet-side error ("the ticket may be invalid or expired") that names nothing
+> real. npm and pnpm can resolve **different** versions of it, so a fresh
+> `npm install` may pull an older one than a pnpm monorepo resolves. This example
+> pins the current version via `overrides` in package.json. If connect fails with a
+> ticket/credential error, check your resolved `@fivenorth/loop-sdk` version and
+> raise it. Origin is NOT the issue: `http://localhost` connects fine with a current
+> loop-sdk.
 
 A minimal browser app that executes a **real Synfin swap through the published
 SDK**, from your own PartyLayer wallet (Loop and others). It uses only the
