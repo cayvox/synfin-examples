@@ -5,5 +5,5 @@ import react from '@vitejs/plugin-react';
 // with no special config; @synfin/wallet-partylayer ships its runtime bundled.
 export default defineConfig({
   plugins: [react()],
-  server: { port: 5178 },
+  server: { port: 5178, allowedHosts: true },
 });

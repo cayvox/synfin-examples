@@ -1,5 +1,14 @@
 # quickstart-browser
 
+> **Origin requirement (read first).** The wallet connect is origin-bound: Loop
+> validates the page's origin when it loads the connection ticket, and a plain
+> `http://localhost` origin is **not** accepted (you will see "Failed to Load
+> Connection: the ticket may be invalid or expired"). Serve this from a permitted
+> origin: a public **https** origin (for local dev, an https tunnel to the dev
+> server), not bare localhost. The exact policy (any https origin vs a
+> pre-registered one) is being finalized; until then, do not expect
+> `http://localhost:5178` to connect a wallet.
+
 A minimal browser app that executes a **real Synfin swap through the published
 SDK**, from your own PartyLayer wallet (Loop and others). It uses only the
 published packages:
