@@ -1,16 +1,17 @@
 # quickstart-browser
 
-> **Keep the Loop SDK current (this is a real footgun).** The wallet connect uses
-> `@fivenorth/loop-sdk`, which is BUNDLED into your app as a transitive dependency
-> of `@partylayer/sdk` (via `@partylayer/adapter-loop`). Loop evolves its pairing
+> **Keep the PartyLayer chain current (a real footgun).** The wallet connect uses
+> `@fivenorth/loop-sdk`, bundled into your app as a transitive dependency of
+> `@partylayer/sdk` (via `@partylayer/adapter-loop`). Loop evolves its pairing
 > protocol, so a **stale** bundled version fails to connect with an opaque
 > wallet-side error ("the ticket may be invalid or expired") that names nothing
-> real. npm and pnpm can resolve **different** versions of it, so a fresh
-> `npm install` may pull an older one than a pnpm monorepo resolves. This example
-> pins the current version via `overrides` in package.json. If connect fails with a
-> ticket/credential error, check your resolved `@fivenorth/loop-sdk` version and
-> raise it. Origin is NOT the issue: `http://localhost` connects fine with a current
-> loop-sdk.
+> real. The fix is version currency: this example uses `@partylayer/sdk >=0.15`
+> (which brings adapter-loop 0.4 and loop-sdk 0.13) and `@partylayer/react >=2.1`
+> (which itself requires sdk >=0.15). The older combination `sdk 0.14` / `react 2.0`
+> bundles `loop-sdk 0.10`, whose handshake Loop's server now rejects, and mixing a
+> new sdk with `react 2.0` produces a dual-SDK type error. If connect fails with a
+> ticket/credential error, run `npm ls @fivenorth/loop-sdk` and raise it. Origin is
+> NOT the issue: `http://localhost` connects fine with a current chain.
 
 A minimal browser app that executes a **real Synfin swap through the published
 SDK**, from your own PartyLayer wallet (Loop and others). It uses only the
