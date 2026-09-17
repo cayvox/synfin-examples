@@ -1,0 +1,9 @@
+# Digital Asset Canton Network Utility DARs (utility-registry-*, utility-credential-*,
+# ...) and their distribution bundle: proprietary licence, NODE-ONLY artifacts fetched
+# from Digital Asset's host at vetting time, never repository content. Enforced in CI
+# by scripts/check-proprietary-artifacts.mjs (which also catches renamed copies and
+# force-adds). See README.md, "Proprietary artifacts".
+utility-*.dar
+utility-*.dalf
+canton-network-utility-dars*
+Terms.and.Conditions.for.Canton.Network.Utility*
