@@ -1,0 +1,50 @@
+name: proprietary-artifacts
+
+# Digital Asset's Utility DARs (utility-registry-*, ...) and their bundle are
+# proprietary, node-only artifacts that never belong in this repository (README.md,
+# "Proprietary artifacts"). Git history is permanent in a public repository, so the
+# gate checks the tree AND every file a pull request's commits add, including one
+# added then deleted.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  proprietary-artifacts:
+    name: no Digital Asset Utility DARs in tree or history
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 20
+
+      - name: Guard tests
+        run: node --test scripts/check-proprietary-artifacts.test.mjs
+
+      - name: Tree scan
+        run: node scripts/check-proprietary-artifacts.mjs
+
+      - name: History scan (the pull request's commits, or the pushed commits)
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_REF: ${{ github.base_ref }}
+          BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            range="origin/${BASE_REF}..HEAD"
+          elif [ -n "$BEFORE_SHA" ] && [ "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]; then
+            range="${BEFORE_SHA}..HEAD"
+          else
+            range="HEAD"
+          fi
+          node scripts/check-proprietary-artifacts.mjs --range "$range"
